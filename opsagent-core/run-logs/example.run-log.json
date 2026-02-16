@@ -1,0 +1,17 @@
+{
+  "run_id": "run-20260101-000001",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "actor": "opsagent-core",
+  "action": "policy-validation",
+  "inputs_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "outputs_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "prev_entry_hash": "GENESIS",
+  "entry_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "evidence": [
+    {
+      "type": "artifact",
+      "uri": "automation-policies/policies/baseline.policy.json",
+      "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+  ]
+}
