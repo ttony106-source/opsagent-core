@@ -1,0 +1,11 @@
+{
+  "entry_id": "GEN-000001",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "change_type": "policy_create",
+  "subject": "opsagent-genesis",
+  "decision": "approved",
+  "approvers": ["system:bootstrap"],
+  "evidence_refs": ["governance-ledger/ledger/GEN-000001.json"],
+  "entry_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "prev_hash": "GENESIS"
+}

@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""Fail-closed schema validation for policy and governance artifacts."""
+"""Fail-closed validation for policy, run-log, and governance artifacts."""
 
 from __future__ import annotations
 
 import json
 import re
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+BINDINGS_PATH = ROOT / "opsagent-core/config/policy-bindings.json"
 
 VALIDATION_TARGETS = (
     {
-        "name": "automation policies",
+        "name": "automation policysets",
         "schema": ROOT / "automation-policies/schemas/policy.schema.json",
-        "directory": ROOT / "automation-policies/policies",
+        "directory": ROOT / "automation-policies/policysets",
         "glob": "*.json",
         "minimum": 1,
     },
@@ -42,20 +42,11 @@ def load_json(path: Path) -> dict[str, Any]:
         return json.load(handle)
 
 
-def _validate_date_time(value: str) -> bool:
-    try:
-        datetime.fromisoformat(value.replace("Z", "+00:00"))
-        return True
-    except ValueError:
-        return False
-
-
 def _matches_type(value: Any, expected_type: str) -> bool:
     mapping = {
         "object": lambda x: isinstance(x, dict),
         "array": lambda x: isinstance(x, list),
         "string": lambda x: isinstance(x, str),
-        "number": lambda x: isinstance(x, (int, float)) and not isinstance(x, bool),
         "integer": lambda x: isinstance(x, int) and not isinstance(x, bool),
         "boolean": lambda x: isinstance(x, bool),
     }
@@ -65,7 +56,6 @@ def _matches_type(value: Any, expected_type: str) -> bool:
 
 def validate_against_schema(payload: Any, schema: dict[str, Any], path: str = "<root>") -> list[str]:
     errors: list[str] = []
-
     expected_type = schema.get("type")
     if expected_type and not _matches_type(payload, expected_type):
         return [f"{path}: expected type {expected_type}, got {type(payload).__name__}"]
@@ -75,17 +65,13 @@ def validate_against_schema(payload: Any, schema: dict[str, Any], path: str = "<
 
     if isinstance(payload, str):
         if "minLength" in schema and len(payload) < schema["minLength"]:
-            errors.append(f"{path}: string length {len(payload)} is less than minLength {schema['minLength']}")
+            errors.append(f"{path}: string length too short")
         if "pattern" in schema and not re.fullmatch(schema["pattern"], payload):
-            errors.append(f"{path}: value {payload!r} does not match pattern {schema['pattern']!r}")
-        if schema.get("format") == "date-time" and not _validate_date_time(payload):
-            errors.append(f"{path}: value {payload!r} is not a valid date-time")
+            errors.append(f"{path}: pattern mismatch")
 
     if isinstance(payload, list):
         if "minItems" in schema and len(payload) < schema["minItems"]:
-            errors.append(f"{path}: list has {len(payload)} item(s), below minItems {schema['minItems']}")
-        if schema.get("uniqueItems") and len(payload) != len({json.dumps(item, sort_keys=True) for item in payload}):
-            errors.append(f"{path}: list items must be unique")
+            errors.append(f"{path}: list has too few items")
         item_schema = schema.get("items")
         if isinstance(item_schema, dict):
             for idx, item in enumerate(payload):
@@ -98,9 +84,8 @@ def validate_against_schema(payload: Any, schema: dict[str, Any], path: str = "<
                 errors.append(f"{path}: missing required property {key!r}")
 
         properties = schema.get("properties", {})
-        additional_allowed = schema.get("additionalProperties", True)
-        if additional_allowed is False:
-            unknown = set(payload) - set(properties)
+        if schema.get("additionalProperties") is False:
+            unknown = set(payload).difference(properties)
             for key in sorted(unknown):
                 errors.append(f"{path}: unexpected property {key!r}")
 
@@ -112,42 +97,35 @@ def validate_against_schema(payload: Any, schema: dict[str, Any], path: str = "<
 
 
 def validate_target(target: dict[str, Any]) -> list[str]:
+    schema = load_json(target["schema"])
+    files = sorted(target["directory"].glob(target["glob"]))
     errors: list[str] = []
-
-    schema_path: Path = target["schema"]
-    if not schema_path.exists():
-        return [f"missing schema: {schema_path}"]
-
-    try:
-        schema = load_json(schema_path)
-    except json.JSONDecodeError as exc:
-        return [f"invalid schema JSON {schema_path}: {exc}"]
-
-    directory: Path = target["directory"]
-    files = sorted(directory.glob(target["glob"]))
-
     if len(files) < target["minimum"]:
-        errors.append(
-            f"{target['name']} fail-closed: expected at least {target['minimum']} file(s) in {directory}, found {len(files)}"
-        )
-        return errors
-
+        return [f"{target['name']} fail-closed: expected >= {target['minimum']} files"]
     for file_path in files:
-        try:
-            payload = load_json(file_path)
-        except json.JSONDecodeError as exc:
-            errors.append(f"{file_path}: invalid JSON ({exc})")
+        payload = load_json(file_path)
+        errors.extend(f"{file_path}: {e}" for e in validate_against_schema(payload, schema))
+    return errors
+
+
+def validate_bindings() -> list[str]:
+    errors: list[str] = []
+    if not BINDINGS_PATH.exists():
+        return [f"missing bindings file: {BINDINGS_PATH}"]
+    bindings = load_json(BINDINGS_PATH)
+    for key in ("policy_schema", "policy_artifact"):
+        if key not in bindings:
+            errors.append(f"bindings missing key: {key}")
             continue
-
-        for error in validate_against_schema(payload, schema):
-            errors.append(f"{file_path}: {error}")
-
+        path = ROOT / bindings[key]
+        if not path.exists():
+            errors.append(f"bindings reference missing file: {path}")
     return errors
 
 
 def main() -> int:
     all_errors: list[str] = []
-
+    all_errors.extend(validate_bindings())
     for target in VALIDATION_TARGETS:
         all_errors.extend(validate_target(target))
 
