@@ -1,0 +1,11 @@
+{
+  "entry_id": "GEN-000001",
+  "timestamp": "2026-01-01T00:00:00Z",
+  "change_type": "policy_create",
+  "subject": "default-prod-guardrails",
+  "decision": "approved",
+  "approvers": ["governance-board"],
+  "evidence_refs": ["automation-policies/policies/baseline.policy.json"],
+  "entry_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "prev_hash": "GENESIS"
+}

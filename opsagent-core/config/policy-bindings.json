@@ -1,0 +1,11 @@
+{
+  "schemas": {
+    "run_log": "opsagent-core/schemas/run-log.schema.json",
+    "policy": "automation-policies/schemas/policy.schema.json",
+    "ledger_entry": "governance-ledger/schemas/ledger-entry.schema.json"
+  },
+  "enforcement": {
+    "ci": "required",
+    "mode": "fail_closed"
+  }
+}

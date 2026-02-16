@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opsagent.dev/schemas/policy.schema.json",
+  "title": "Automation Policy",
+  "description": "Policy document that constrains automated actions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy_id",
+    "version",
+    "owner",
+    "status",
+    "controls",
+    "enforcement"
+  ],
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{2,63}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 3
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "active", "deprecated"]
+    },
+    "controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["control_id", "statement", "severity"],
+        "properties": {
+          "control_id": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,10}-[0-9]{3,6}$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 10
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "exceptions"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["fail_closed", "warn"]
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9._:-]{3,128}$"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "policy_id": "default-prod-guardrails",
+  "version": "v1.0.0",
+  "owner": "platform-governance",
+  "status": "active",
+  "controls": [
+    {
+      "control_id": "EXEC-100",
+      "statement": "All automation executions must emit signed run logs and evidence digests.",
+      "severity": "critical",
+      "tags": ["audit", "traceability"]
+    },
+    {
+      "control_id": "EXEC-110",
+      "statement": "Policy validation failures must block deployment and runtime promotion.",
+      "severity": "high",
+      "tags": ["policy", "fail-closed"]
+    }
+  ],
+  "enforcement": {
+    "mode": "fail_closed",
+    "exceptions": []
+  }
+}

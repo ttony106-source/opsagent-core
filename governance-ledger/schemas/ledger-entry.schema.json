@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opsagent.dev/schemas/ledger-entry.schema.json",
+  "title": "Governance Ledger Entry",
+  "description": "Approval and policy change record for governance-ledger.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "entry_id",
+    "timestamp",
+    "change_type",
+    "subject",
+    "decision",
+    "approvers",
+    "evidence_refs",
+    "entry_hash",
+    "prev_hash"
+  ],
+  "properties": {
+    "entry_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,10}-[0-9]{6}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "change_type": {
+      "type": "string",
+      "enum": ["policy_create", "policy_update", "policy_deprecate", "exception_grant"]
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 3
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["approved", "rejected", "expired"]
+    },
+    "approvers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "uniqueItems": true
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9._:/-]{3,256}$"
+      },
+      "uniqueItems": true
+    },
+    "entry_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "prev_hash": {
+      "type": "string",
+      "pattern": "^([a-f0-9]{64}|GENESIS)$"
+    }
+  }
+}
