@@ -4,6 +4,8 @@
     "policy": "automation-policies/schemas/policy.schema.json",
     "ledger_entry": "governance-ledger/schemas/ledger-entry.schema.json"
   },
+  "policy_schema": "automation-policies/schemas/policy.schema.json",
+  "policy_artifact": "automation-policies/policysets/baseline.policy.json",
   "enforcement": {
     "ci": "required",
     "mode": "fail_closed"

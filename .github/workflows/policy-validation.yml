@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  validate-policies:
+  validate-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,5 +18,14 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Run unit tests
+        run: pytest -q
+
       - name: Validate policy artifacts (fail-closed)
         run: python scripts/validate_policies.py
+
+      - name: Validate OpsAgent policy binding
+        run: PYTHONPATH=src python -m opsagent validate

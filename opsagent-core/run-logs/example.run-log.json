@@ -1,17 +1,20 @@
 {
-  "run_id": "run-20260101-000001",
-  "timestamp": "2026-01-01T00:00:00Z",
-  "actor": "opsagent-core",
-  "action": "policy-validation",
-  "inputs_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-  "outputs_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-  "prev_entry_hash": "GENESIS",
-  "entry_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "run_id": "000001",
+  "timestamp": "2026-02-16T00:00:00Z",
+  "actor": "ceo:example",
+  "action": "approve_release",
+  "mode": "FAIL_CLOSED",
+  "payload_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "decision_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "hash_prev": "GENESIS",
+  "hash_curr": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "decision": {
+    "allow": true,
+    "decision": "ALLOW",
+    "reason": "policy_matched",
+    "policy_id": "POL-EXEC-001"
+  },
   "evidence": [
-    {
-      "type": "artifact",
-      "uri": "automation-policies/policies/baseline.policy.json",
-      "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-    }
+    {"path": "governance-ledger/evidence/2026-02/RUN-000001/run_entry.json"}
   ]
 }
