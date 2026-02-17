@@ -134,4 +134,12 @@ def evaluate_policy(policyset: dict[str, Any], action: str, payload: dict[str, A
         if field not in payload:
             return Decision(allow=False, reason=f"missing_required_field:{field}", policy_id=policy.get("policy_id"))
 
+    required_equals = policy.get("requires", {}).get("payload_equals", {})
+    if not isinstance(required_equals, dict):
+        return Decision(allow=False, reason="ambiguous_required_values", policy_id=policy.get("policy_id"))
+
+    for field, expected in required_equals.items():
+        if payload.get(field) != expected:
+            return Decision(allow=False, reason=f"invalid_required_value:{field}", policy_id=policy.get("policy_id"))
+
     return Decision(allow=True, reason="policy_matched", policy_id=policy.get("policy_id"))

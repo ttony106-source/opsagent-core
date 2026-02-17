@@ -45,3 +45,17 @@ py -3 -m opsagent simulate --action unknown_action --payload .\payload.json --ac
 '{"change_ticket":"CHG-2026-0001"}' | Set-Content -Path .\allow-payload.json
 py -3 -m opsagent run --action approve_release --payload .\allow-payload.json --actor ceo:janedoe --mode FAIL_CLOSED
 ```
+
+## Investor conversion enforcement mode
+
+Baseline policy set includes a `social_post` action guardrail for capital-raise campaigns.
+
+Required payload constraints:
+
+- `job_type` must be `SOCIAL_POST`
+- `mode` must be `CAPITAL_RAISE_INVESTOR_CONVERSION`
+- `authority_level` must be `TRUSTEE_EXECUTION_APPROVED`
+- `platforms` must be `["linkedin"]`
+- `priority` must be `CRITICAL`
+
+Any mismatch is denied fail-closed and logged with immutable evidence.
