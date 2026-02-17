@@ -9,10 +9,19 @@
       "mode": "FAIL_CLOSED",
       "requires": {
         "authority_role": "CEO",
-        "payload_fields": ["change_ticket"]
+        "payload_fields": [
+          "change_ticket"
+        ]
       },
-      "checks": ["authority_role", "required_fields"],
-      "evidence_required": ["run_entry.json", "payload.json", "decision.json"],
+      "checks": [
+        "authority_role",
+        "required_fields"
+      ],
+      "evidence_required": [
+        "run_entry.json",
+        "payload.json",
+        "decision.json"
+      ],
       "on_deny": "DENY"
     },
     {
@@ -20,10 +29,56 @@
       "action": "audit_snapshot",
       "mode": "ANY",
       "requires": {
-        "payload_fields": ["scope"]
+        "payload_fields": [
+          "scope"
+        ]
       },
-      "checks": ["required_fields"],
-      "evidence_required": ["run_entry.json", "payload.json", "decision.json"],
+      "checks": [
+        "required_fields"
+      ],
+      "evidence_required": [
+        "run_entry.json",
+        "payload.json",
+        "decision.json"
+      ],
+      "on_deny": "DENY"
+    },
+    {
+      "policy_id": "POL-SOCIAL-001",
+      "action": "social_post",
+      "mode": "FAIL_CLOSED",
+      "requires": {
+        "authority_role": "TRUSTEE",
+        "payload_fields": [
+          "job_type",
+          "mode",
+          "authority_level",
+          "platforms",
+          "priority",
+          "command",
+          "topic"
+        ],
+        "payload_equals": {
+          "job_type": "SOCIAL_POST",
+          "mode": "CAPITAL_RAISE_INVESTOR_CONVERSION",
+          "authority_level": "TRUSTEE_EXECUTION_APPROVED",
+          "priority": "CRITICAL",
+          "platforms": [
+            "linkedin"
+          ]
+        }
+      },
+      "checks": [
+        "authority_role",
+        "required_fields",
+        "required_values",
+        "linkedin_only"
+      ],
+      "evidence_required": [
+        "run_entry.json",
+        "payload.json",
+        "decision.json"
+      ],
       "on_deny": "DENY"
     }
   ]
